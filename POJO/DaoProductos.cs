@@ -18,7 +18,7 @@ namespace Tarea4._3_Transaccion.POJO
             cn.Open();
             try
             {
-                string query = "SELECT * FROM producto WHERE codigo = @code and estado = 'Activo'";
+                string query = "SELECT * FROM productos WHERE codigo = @code and estado = 'Activo'";
                 MySqlCommand comando = new MySqlCommand(query, cn);
                 comando.Parameters.AddWithValue("@code", code);
 
@@ -64,7 +64,7 @@ namespace Tarea4._3_Transaccion.POJO
             {
                 foreach (Producto producto in productos)
                 {
-                    string strSQL = "UPDATE producto set estado = 'Inactivo' where codigo = @Codigo";
+                    string strSQL = "UPDATE productos set estado = 'Inactivo' where codigo = @Codigo";
                     MySqlCommand comando = new MySqlCommand(strSQL, cn);
                     comando.Parameters.AddWithValue("Codigo", producto.Codigo);
                     comando.ExecuteNonQuery();
