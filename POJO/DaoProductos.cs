@@ -14,11 +14,11 @@ namespace Tarea4._3_Transaccion.POJO
         public async Task<Producto> BuscarProducto(string code)
         {
             MySqlConnection cn = new MySqlConnection();
-            cn.ConnectionString = "server=localhost; database=Productos; user=root; pwd=root";
+            cn.ConnectionString = "server=localhost; Port=3307; database=Productos; user=root; pwd=root";
             cn.Open();
             try
             {
-                string query = "SELECT * FROM productos WHERE codigo = @code";
+                string query = "SELECT * FROM producto WHERE codigo = @code and estado = 'Activo'";
                 MySqlCommand comando = new MySqlCommand(query, cn);
                 comando.Parameters.AddWithValue("@code", code);
 
@@ -34,15 +34,16 @@ namespace Tarea4._3_Transaccion.POJO
                             Stock = reader.GetInt32("stock"),
                             Precio = reader.GetDecimal("precio"),
                             Estado = reader.GetString("estado"),
-                            FechaActualizacion = reader.GetDateTime("fecha_actualizacion")
+                            Codigo = reader.GetString("codigo"),
+                            FechaActualizacion = reader.GetDateTime("fechaActualizacion")
                         };
                     }
                     return null;
                 }
             }
-            catch
+            catch (Exception ex) 
             {
-                throw new Exception("Error al consultar el producto: ");
+                throw new Exception("Error al consultar el producto: " + ex.Message);
             }
             finally
             {
@@ -56,14 +57,14 @@ namespace Tarea4._3_Transaccion.POJO
         public bool DescontinuarProductos(List<Producto> productos)
         {
             MySqlConnection cn = new MySqlConnection();
-            cn.ConnectionString = "server=localhost; database=Productos; user=root; pwd=root";
+            cn.ConnectionString = "server=localhost; Port=3307; database=Productos; user=root; pwd=root";
             cn.Open();
             MySqlTransaction trans = cn.BeginTransaction();
             try
             {
                 foreach (Producto producto in productos)
                 {
-                    string strSQL = "delete * from productos where codigo = @Codigo";
+                    string strSQL = "UPDATE producto set estado = 'Inactivo' where codigo = @Codigo";
                     MySqlCommand comando = new MySqlCommand(strSQL, cn);
                     comando.Parameters.AddWithValue("Codigo", producto.Codigo);
                     comando.ExecuteNonQuery();

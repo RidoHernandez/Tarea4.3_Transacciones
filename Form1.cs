@@ -17,10 +17,10 @@ namespace Tarea4._3_Transaccion
 
         public void Iniciar()
         {
-            Form1_Load(this, EventArgs.Empty);
+            txtCode.KeyPress += AgregarProducto;
         }
 
-        public async Task AgregarProducto(object sender, KeyPressEventArgs e)
+        public async void AgregarProducto(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == (char)Keys.Enter)
             {
@@ -31,8 +31,14 @@ namespace Tarea4._3_Transaccion
                     Producto producto = await daoProducts.BuscarProducto(code);
 
                     if (producto == null) throw new Exception("Producto no encontrado");
-                    listaProductos.Add(producto);
-                    dataGridView1.DataSource = listaProductos;
+                    if (listaProductos.Exists(p => p.Codigo == producto.Codigo))
+                    {
+                        MessageBox.Show("El producto ya ha sido agregado a la lista.");
+                    } else
+                    {
+                        listaProductos.Add(producto);
+                        dataGridView1.DataSource = listaProductos;
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -41,24 +47,9 @@ namespace Tarea4._3_Transaccion
             }
         }
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            dataGridView1.Columns.Clear();
-
-            dataGridView1.Columns.Add("Codigo", "Código");
-            dataGridView1.Columns.Add("Nombre", "Nombre");
-            dataGridView1.Columns.Add("Descripcion", "Descripción");
-            dataGridView1.Columns.Add("Stock", "Stock");
-            dataGridView1.Columns.Add("Precio", "Precio");
-            dataGridView1.Columns.Add("Estado", "Estado");
-            dataGridView1.Columns.Add("FechaActualizacion", "Fecha Actualización");
-
-            dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-        }
-
         private void btnDescontinuar_Click(object sender, EventArgs e)
         {
-            if(listaProductos.Count == 0)
+            if (listaProductos.Count == 0)
             {
                 MessageBox.Show("No hay productos para descontinuar.");
                 return;
@@ -66,9 +57,9 @@ namespace Tarea4._3_Transaccion
 
             DialogResult resultado = MessageBox.Show(
                 "¿Estás seguro que quieres borrar productos?",
-                "Confirmación",                            
-                MessageBoxButtons.YesNo,                     
-                MessageBoxIcon.Question                      
+                "Confirmación",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question
             );
 
             if (resultado == DialogResult.Yes)
